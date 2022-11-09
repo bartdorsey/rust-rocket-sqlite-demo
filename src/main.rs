@@ -32,6 +32,12 @@ async fn main() -> Result<(), rocket::Error> {
     let pool = SqlitePool::connect("sqlite://db.sqlite3")
         .await
         .expect("Couldn't connect to sqlite database");
+
+    sqlx::migrate!()
+        .run(&pool)
+        .await
+        .expect("Couldn't migrate the database tables");
+
     let _rocket = rocket::build()
         .mount("/", routes![index, create, detail])
         .manage(pool)
